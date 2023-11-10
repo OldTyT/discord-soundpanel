@@ -45,10 +45,11 @@ async def helpq(ctx):
     await ctx.send(help_msg)
 
 
-@bot.command
+@bot.command()
 async def au(ctx):
-    af.update_files()
+    af.update_files_list()
     await ctx.send("Cache files updated.")
+
 
 @bot.command()
 async def hi(ctx):
@@ -60,8 +61,9 @@ async def rm(ctx, audio_name):
     if ctx.author.id != cfg.discord_admin_id:
         await ctx.send(f"You are not admin. You'r id: {ctx.author.id}")
         return
-    af.remove_file(audio_name)
+    af.rm_file(audio_name)
     await ctx.send("File removed")
+
 
 @bot.command()
 async def up(ctx, audio_name):
