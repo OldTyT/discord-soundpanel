@@ -1,0 +1,13 @@
+---
+version: '3'
+
+services:
+  discord_sp:
+    image: test:local
+    environment:
+      DISCORD_TOKEN: "TOKEN"
+      DISCORD_ID: 1234567890
+      DISCORD_PREFIX: "/"
+      DISCORD_BOT:  "BOT_NAME"
+    volumes:
+      - /mnt/audio:/mnt/audio
