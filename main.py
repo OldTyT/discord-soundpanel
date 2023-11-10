@@ -74,11 +74,11 @@ async def up(ctx, audio_name):
     if sound.content_type.find("audio/") == -1:
         await ctx.send("File is not audio.")
         return
-    await af.save_file(sound, audio_name)
     audio = af.exists_files(audio_name)
     if audio:
         await ctx.send("File exists, please use another name.")
         return
+    await af.save_file(sound, audio_name)
     await ctx.send("File download")
 
 
