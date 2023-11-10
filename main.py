@@ -35,10 +35,11 @@ async def helpq(ctx):
     help_msg = "```\n"
     help_msg += f"{cfg.discord_prefix}help - show help\n"
     help_msg += f"{cfg.discord_prefix}hi - say hi\n"
-    help_msg += f"{cfg.discord_prefix}up - upload audio file\n"
+    help_msg += f"{cfg.discord_prefix}up <audio_name> - upload audio file\n"
     help_msg += f"{cfg.discord_prefix}ls - show list of files in sound panel\n"
-    help_msg += f"{cfg.discord_prefix}sp - play audio file\n"
+    help_msg += f"{cfg.discord_prefix}sp <audio_name> - play audio file\n"
     help_msg += f"{cfg.discord_prefix}stop - stop playing audio\n"
+    help_msg += f"{cfg.discord_prefix}rm <audio_name> - remove audio file\n"
     help_msg += "```"
     await ctx.send(help_msg)
 
@@ -47,6 +48,14 @@ async def helpq(ctx):
 async def hi(ctx):
     await ctx.send(f"Hi, {ctx.message.author.mention}!")
 
+
+@bot.command()
+async def rm(ctx, audio_name):
+    if ctx.author.id != cfg.discord_admin_id:
+        await ctx.send(f"You are not admin. You'r id: {ctx.author.id}")
+        return
+    af.remove_file(audio_name)
+    await ctx.send("File removed")
 
 @bot.command()
 async def up(ctx, audio_name):

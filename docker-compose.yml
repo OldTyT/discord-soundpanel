@@ -3,11 +3,12 @@ version: '3'
 
 services:
   discord_sp:
-    image: test:local
+    image: ghcr.io/oldtyt/discord-soundpanel
     environment:
       DISCORD_TOKEN: "TOKEN"
       DISCORD_ID: 1234567890
       DISCORD_PREFIX: "/"
       DISCORD_BOT:  "BOT_NAME"
+      DISCORD_ADMIN_ID: "1"
     volumes:
       - /mnt/audio:/mnt/audio

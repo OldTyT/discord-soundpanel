@@ -1,4 +1,5 @@
 from os import listdir
+import os
 
 
 class AudioFiles:
@@ -14,6 +15,11 @@ class AudioFiles:
 
     def get_files(self):
         return self.files
+
+    def rm_file(self, filename):
+        self.files.remove(filename)
+        os.remove(f"{self.dirpath}/{filename}")
+        return filename
 
     async def save_file(self, file, audio_name):
         await file.save(f"{self.dirpath}/{audio_name}")
