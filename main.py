@@ -85,9 +85,9 @@ async def up(ctx, audio_name):
 @bot.command()
 async def ls(ctx):
     files = af.get_files()
-    msg = "Exists files:\n"
+    msg = "Play sound:\n"
     for file in files:
-        msg += f"* {file}\n"
+        msg += f"```{cfg.discord_prefix}sp {file}```\n"
     await ctx.send(msg)
 
 
