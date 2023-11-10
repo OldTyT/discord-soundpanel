@@ -5,7 +5,10 @@ import os
 class AudioFiles:
     def __init__(self, dirpath):
         self.dirpath = dirpath
-        self.files = listdir(dirpath)
+        self.files = listdir(self.dirpath)
+
+    def update_files_list(self):
+        self.files = listdir(self.dirpath)
 
     def exists_files(self, filename):
         return filename in self.files

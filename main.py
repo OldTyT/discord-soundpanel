@@ -40,9 +40,15 @@ async def helpq(ctx):
     help_msg += f"{cfg.discord_prefix}sp <audio_name> - play audio file\n"
     help_msg += f"{cfg.discord_prefix}stop - stop playing audio\n"
     help_msg += f"{cfg.discord_prefix}rm <audio_name> - remove audio file\n"
+    help_msg += f"{cfg.discord_prefix}au - update cache audio files\n"
     help_msg += "```"
     await ctx.send(help_msg)
 
+
+@bot.command
+async def au(ctx):
+    af.update_files()
+    await ctx.send("Cache files updated.")
 
 @bot.command()
 async def hi(ctx):
