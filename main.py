@@ -30,8 +30,11 @@ class Bot(commands.Bot):
 
 bot = Bot()
 
-async def channel_connect(ctx):
-    channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
+async def channel_connect(ctx, is_troyan: str):
+    if is_troyan == "y":
+        channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
+    else:
+        channel = ctx.message.author.voice.channel
     try:
         await channel.connect()
     except discord.errors.ClientException:
@@ -121,7 +124,7 @@ async def ls(ctx):
 
 
 @bot.hybrid_command(description="Play audio")
-async def p(ctx, sound, stop="n", rnd_bye="y"):
+async def p(ctx, sound, stop="n", rnd_bye="y", is_troyan="n"):
     """
     Play sound
     """
@@ -129,7 +132,7 @@ async def p(ctx, sound, stop="n", rnd_bye="y"):
         await ctx.send("Audio not found.")
         return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
-    _, voice_client = await channel_connect(ctx)
+    _, voice_client = await channel_connect(ctx, is_troyan.lower())
     if voice_client is None:
         await ctx.send("Smth error")
         return
