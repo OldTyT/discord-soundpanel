@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import random
+import os
+from typing import Any, Coroutine
 
 import discord
 
@@ -16,9 +18,17 @@ from models.config import GlobalConfigs
 cfg = GlobalConfigs()
 af = AudioFiles(cfg.audio_dirpath)
 
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=cfg.discord_prefix, intents=intents)
+class Bot(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.all()
+        intents.message_content = True
+        super().__init__(command_prefix=cfg.discord_prefix, intents=intents)
 
+    async def setup_hook(self) -> Coroutine[Any, Any, None]:
+        await self.tree.sync()
+        #return super()._async_setup_hook()
+
+bot = Bot()
 
 async def channel_connect(ctx):
     channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
@@ -31,8 +41,11 @@ async def channel_connect(ctx):
     return channel, voice_client
 
 
-@bot.command()
+@bot.hybrid_command(description="Additional help message")
 async def helpq(ctx):
+    """
+    Additional help message
+    """
     help_msg = "```\n"
     help_msg += f"{cfg.discord_prefix}help - show help\n"
     help_msg += f"{cfg.discord_prefix}hi - say hi\n"
@@ -46,19 +59,28 @@ async def helpq(ctx):
     await ctx.send(help_msg)
 
 
-@bot.command()
+@bot.hybrid_command(description="Update audio cache")
 async def au(ctx):
+    """
+    Update cache audio files
+    """
     af.update_files_list()
     await ctx.send("Cache files updated.")
 
 
-@bot.command()
+@bot.hybrid_command(description="Say hi")
 async def hi(ctx):
+    """
+    Say hi
+    """
     await ctx.send(f"Hi, {ctx.message.author.mention}!")
 
 
-@bot.command()
+@bot.hybrid_command(description="Remove audio.")
 async def rm(ctx, audio_name):
+    """
+    Remove audio
+    """
     if ctx.author.id != cfg.discord_admin_id:
         await ctx.send(f"You are not admin. You'r id: {ctx.author.id}")
         return
@@ -66,8 +88,11 @@ async def rm(ctx, audio_name):
     await ctx.send("File removed")
 
 
-@bot.command()
+@bot.hybrid_command(description="Upload audio file.")
 async def up(ctx, audio_name):
+    """
+    Upload audio file
+    """
     if not ctx.message.attachments:
         await ctx.send("File not found.")
         return
@@ -83,8 +108,11 @@ async def up(ctx, audio_name):
     await ctx.send("File download")
 
 
-@bot.command()
+@bot.hybrid_command(description="Get list aviable sound.")
 async def ls(ctx):
+    """
+    Get list aviable sound
+    """
     files = af.get_files()
     msg = "Play sound:\n"
     for file in files:
@@ -92,8 +120,14 @@ async def ls(ctx):
     await ctx.send(msg)
 
 
-@bot.command()
+@bot.hybrid_command(description="Play audio")
 async def p(ctx, sound, stop="n", rnd_bye="y"):
+    """
+    Play sound
+    """
+    if not af.exists_files(sound):
+        await ctx.send("Audio not found.")
+        return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
     _, voice_client = await channel_connect(ctx)
     if voice_client is None:
@@ -118,7 +152,7 @@ async def p(ctx, sound, stop="n", rnd_bye="y"):
         await asyncio.sleep(1)
 
 
-@bot.command()
+@bot.hybrid_group(description="Stop play audio")
 async def stop(ctx):
     """
     Command to stop playing audio and disconnect from the voice channel.
@@ -135,5 +169,5 @@ async def stop(ctx):
         voice_client.stop()
     await voice_client.disconnect()
 
-
+# bot.setup_hook()
 bot.run(cfg.discord_token.get_secret_value())
