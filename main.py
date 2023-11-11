@@ -91,7 +91,7 @@ async def rm(ctx, audio_name):
     await ctx.send("File removed")
 
 
-@bot.hybrid_command(description="Upload audio file.")
+@bot.command()
 async def up(ctx, audio_name):
     """
     Upload audio file
