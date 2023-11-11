@@ -30,9 +30,12 @@ class Bot(commands.Bot):
 
 bot = Bot()
 
-async def channel_connect(ctx, is_troyan: str):
+async def channel_connect(ctx, is_troyan: str, channel_name: str):
     if is_troyan == "y":
-        channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
+        if channel_name == "":
+            channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
+        else:
+            channel = discord.utils.get(ctx.guild.voice_channels, name=channel_name)
     else:
         channel = ctx.message.author.voice.channel
     try:
@@ -111,6 +114,15 @@ async def up(ctx, audio_name):
     await ctx.send("File download")
 
 
+@bot.hybrid_command(description="Get all voice channels")
+async def channels(ctx):
+    voice_channel_list = ctx.guild.voice_channels
+    voice_channel_list = [voice_channel.name for voice_channel in voice_channel_list]
+    msg = "Voice channel:\n"    
+    for channel in voice_channel_list:
+        msg += f"* {channel}\n"
+    await ctx.send(msg)
+
 @bot.hybrid_command(description="Get list aviable sound.")
 async def ls(ctx):
     """
@@ -123,8 +135,40 @@ async def ls(ctx):
     await ctx.send(msg)
 
 
+@bot.hybrid_command(description="Play audio in another voice channel")
+async def troyan(ctx, sound, stop="n", bye="y", is_troyan="n", channel_name=""):
+    """
+    Play sound
+    """
+    if not af.exists_files(sound):
+        await ctx.send("Audio not found.")
+        return
+    source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
+    _, voice_client = await channel_connect(ctx, is_troyan.lower(), channel_name)
+    if voice_client is None:
+        await ctx.send("Smth error")
+        return
+    if stop.lower() == "y":
+        voice_client.stop()
+    try:
+        voice_client.play(source)
+    except discord.errors.ClientException as e:
+        await ctx.send(f"Error: {e}")
+        return
+    while bye.lower() == "y" and cfg.bye_audio[0] != "":
+      if not voice_client.is_playing():
+          source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(random.choice(cfg.bye_audio)))
+          voice_client.play(source)
+          break
+      await asyncio.sleep(1)
+    while True:
+        if not voice_client.is_playing():
+            await voice_client.disconnect()
+        await asyncio.sleep(1)
+
+
 @bot.hybrid_command(description="Play audio")
-async def p(ctx, sound, stop="n", rnd_bye="y", is_troyan="n"):
+async def p(ctx, sound, stop="n", bye="y", is_troyan="n"):
     """
     Play sound
     """
@@ -143,7 +187,7 @@ async def p(ctx, sound, stop="n", rnd_bye="y", is_troyan="n"):
     except discord.errors.ClientException as e:
         await ctx.send(f"Error: {e}")
         return
-    while rnd_bye.lower() == "y" and cfg.bye_audio[0] != "":
+    while bye.lower() == "y" and cfg.bye_audio[0] != "":
       if not voice_client.is_playing():
           source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(random.choice(cfg.bye_audio)))
           voice_client.play(source)
