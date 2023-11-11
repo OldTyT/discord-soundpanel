@@ -136,7 +136,7 @@ async def ls(ctx):
 
 
 @bot.hybrid_command(description="Play audio in another voice channel")
-async def troyan(ctx, sound, stop="n", bye="y", is_troyan="n", channel_name=""):
+async def troyan(ctx, sound, stop="n", bye="y", channel_name=""):
     """
     Play sound
     """
@@ -144,7 +144,7 @@ async def troyan(ctx, sound, stop="n", bye="y", is_troyan="n", channel_name=""):
         await ctx.send("Audio not found.")
         return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
-    _, voice_client = await channel_connect(ctx, is_troyan.lower(), channel_name)
+    _, voice_client = await channel_connect(ctx, "y", channel_name)
     if voice_client is None:
         await ctx.send("Smth error")
         return
