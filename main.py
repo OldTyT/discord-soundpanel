@@ -116,8 +116,8 @@ async def up(ctx, audio_name):
     await ctx.send("File download")
 
 
-@bot.command(description="Get all voice channels")
-async def channelq(ctx):
+@bot.command()
+async def channellq(ctx):
     voice_channel_list = ctx.guild.voice_channels
     msg = "Voice channel:\n"    
     for channel in voice_channel_list:
@@ -125,8 +125,6 @@ async def channelq(ctx):
         for member in channel.members:
             members += member.nick + ", "
         msg += f"* name: {channel.name} id: {channel.id} members: {members}\n"
-    print(msg)
-    return
     await ctx.send(msg)
 
 
