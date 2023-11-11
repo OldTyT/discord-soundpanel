@@ -30,10 +30,12 @@ class Bot(commands.Bot):
 
 bot = Bot()
 
-async def channel_connect(ctx, is_troyan: str, channel_name: str):
+async def channel_connect(ctx, is_troyan: str, channel_name: str, channel_id: int = 0):
     if is_troyan == "y":
         if channel_name == "":
             channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
+        if channel_id != 0:
+            channel = discord.utils.get(ctx.guild.voice_channels, id=channel_id)
         else:
             channel = discord.utils.get(ctx.guild.voice_channels, name=channel_name)
     else:
@@ -117,10 +119,9 @@ async def up(ctx, audio_name):
 @bot.hybrid_command(description="Get all voice channels")
 async def channels(ctx):
     voice_channel_list = ctx.guild.voice_channels
-    voice_channel_list = [voice_channel.name for voice_channel in voice_channel_list]
     msg = "Voice channel:\n"    
     for channel in voice_channel_list:
-        msg += f"* {channel}\n"
+        msg += f"* name: {channel.name} id: {channel.id}\n"
     await ctx.send(msg)
 
 @bot.hybrid_command(description="Get list aviable sound.")
@@ -136,15 +137,18 @@ async def ls(ctx):
 
 
 @bot.hybrid_command(description="Play audio in another voice channel")
-async def troyan(ctx, sound, stop="n", bye="y", channel_name=""):
+async def troyan(ctx, sound, stop="n", bye="y", channel_name="", channel_id="0"):
     """
     Play sound
     """
+    if not channel_id.isdigit():
+        await ctx.send("Channel id is not digit.")
+    channel_id = int(channel_id)
     if not af.exists_files(sound):
         await ctx.send("Audio not found.")
         return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
-    _, voice_client = await channel_connect(ctx, "y", channel_name)
+    _, voice_client = await channel_connect(ctx, "y", channel_name, channel_id)
     if voice_client is None:
         await ctx.send("Smth error")
         return
