@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import random
 
 import discord
 
@@ -37,7 +38,7 @@ async def helpq(ctx):
     help_msg += f"{cfg.discord_prefix}hi - say hi\n"
     help_msg += f"{cfg.discord_prefix}up <audio_name> - upload audio file\n"
     help_msg += f"{cfg.discord_prefix}ls - show list of files in sound panel\n"
-    help_msg += f"{cfg.discord_prefix}sp <audio_name> - play audio file\n"
+    help_msg += f"{cfg.discord_prefix}p <audio_name> - play audio file\n"
     help_msg += f"{cfg.discord_prefix}stop - stop playing audio\n"
     help_msg += f"{cfg.discord_prefix}rm <audio_name> - remove audio file\n"
     help_msg += f"{cfg.discord_prefix}au - update cache audio files\n"
@@ -92,7 +93,7 @@ async def ls(ctx):
 
 
 @bot.command()
-async def sp(ctx, sound, stop="N"):
+async def p(ctx, sound, stop="n", rnd_bye="y"):
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
     _, voice_client = await channel_connect(ctx)
     if voice_client is None:
@@ -105,10 +106,16 @@ async def sp(ctx, sound, stop="N"):
     except discord.errors.ClientException as e:
         await ctx.send(f"Error: {e}")
         return
+    while rnd_bye.lower() == "y" and cfg.bye_audio[0] != "":
+      if not voice_client.is_playing():
+          source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(random.choice(cfg.bye_audio)))
+          voice_client.play(source)
+          break
+      await asyncio.sleep(1)
     while True:
         if not voice_client.is_playing():
             await voice_client.disconnect()
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
 
 @bot.command()
