@@ -116,13 +116,19 @@ async def up(ctx, audio_name):
     await ctx.send("File download")
 
 
-@bot.hybrid_command(description="Get all voice channels")
-async def channels(ctx):
+@bot.command(description="Get all voice channels")
+async def channelq(ctx):
     voice_channel_list = ctx.guild.voice_channels
     msg = "Voice channel:\n"    
     for channel in voice_channel_list:
-        msg += f"* name: {channel.name} id: {channel.id}\n"
+        members = ""
+        for member in channel.members:
+            members += member.nick + ", "
+        msg += f"* name: {channel.name} id: {channel.id} members: {members}\n"
+    print(msg)
+    return
     await ctx.send(msg)
+
 
 @bot.hybrid_command(description="Get list aviable sound.")
 async def ls(ctx):
