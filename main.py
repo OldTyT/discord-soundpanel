@@ -119,7 +119,7 @@ async def ls(ctx):
     files = af.get_files()
     msg = "Play sound:\n"
     for file in files:
-        msg += f"* `{cfg.discord_prefix}sp {file}`\n"
+        msg += f"* `{cfg.discord_prefix}p {file}`\n"
     await ctx.send(msg)
 
 
