@@ -30,7 +30,7 @@ class Bot(commands.Bot):
 
 bot = Bot()
 
-async def channel_connect(ctx, is_troyan: str, channel_name: str, channel_id: int = 0):
+async def channel_connect(ctx, is_troyan: str, channel_name: str, channel_id: int = 0, stop: str = "n"):
     if is_troyan == "y":
         if channel_name == "":
             channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.message.channel.name)
@@ -43,7 +43,8 @@ async def channel_connect(ctx, is_troyan: str, channel_name: str, channel_id: in
     try:
         await channel.connect()
     except discord.errors.ClientException:
-        await ctx.send("I'm in voice channel!")
+        if stop != "n":
+            await ctx.send("I'm in voice channel!")
         channel = None
     voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
     return channel, voice_client
@@ -152,7 +153,7 @@ async def troyan(ctx, sound, stop="n", bye="y", channel_name="", channel_id="0")
         await ctx.send("Audio not found.")
         return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
-    _, voice_client = await channel_connect(ctx, "y", channel_name, channel_id)
+    _, voice_client = await channel_connect(ctx, "y", channel_name, channel_id, stop)
     if voice_client is None:
         await ctx.send("Smth error")
         return
@@ -184,7 +185,7 @@ async def p(ctx, sound, stop="n", bye="n"):
         await ctx.send("Audio not found.")
         return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
-    _, voice_client = await channel_connect(ctx, "n", "", "")
+    _, voice_client = await channel_connect(ctx, "n", "", "", stop)
     if voice_client is None:
         await ctx.send("Smth error")
         return
