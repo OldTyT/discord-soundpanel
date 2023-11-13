@@ -43,7 +43,7 @@ async def channel_connect(ctx, is_troyan: str, channel_name: str, channel_id: in
     try:
         await channel.connect()
     except discord.errors.ClientException:
-        if stop != "n":
+        if stop != "y":
             await ctx.send("I'm in voice channel!")
         channel = None
     voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
