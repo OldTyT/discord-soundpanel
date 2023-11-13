@@ -195,7 +195,7 @@ async def p(ctx, sound, stop="n", bye="n"):
         await ctx.send(f"Error: {e}")
         return
     try:
-        await ctx.message.id.delete()
+        await ctx.message.delete()
     except Exception as ex:
         my_logger.error(f"Smth error: {ex}")
     while bye.lower() == "y" and cfg.bye_audio[0] != "":
