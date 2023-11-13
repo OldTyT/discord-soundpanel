@@ -197,7 +197,7 @@ async def p(ctx, sound, stop="n", bye="n"):
     try:
         await ctx.message.id.delete()
     except Exception as ex:
-        logger.Error(f"Smth error: {ex}")
+        my_logger.error(f"Smth error: {ex}")
     while bye.lower() == "y" and cfg.bye_audio[0] != "":
       if not voice_client.is_playing():
           source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(random.choice(cfg.bye_audio)))
