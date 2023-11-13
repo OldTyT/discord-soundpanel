@@ -184,7 +184,7 @@ async def p(ctx, sound, stop="n", bye="y", is_troyan="n"):
         await ctx.send("Audio not found.")
         return
     source = await discord.FFmpegOpusAudio.from_probe(af.get_filepath(sound))
-    _, voice_client = await channel_connect(ctx, is_troyan.lower())
+    _, voice_client = await channel_connect(ctx, is_troyan.lower(), "", "")
     if voice_client is None:
         await ctx.send("Smth error")
         return
