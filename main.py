@@ -210,18 +210,41 @@ async def p(ctx, sound, stop="n", bye="n"):
         await asyncio.sleep(1)
 
 
+@bot.hybrid_command(description="Tag user kaqfan.")
+async def kaqfan(ctx,):
+    """
+    Tag user kaqfan
+    """
+    await ctx.message.delete()
+    message_list = []
+    for channel in ctx.guild.voice_channels:
+        channelq = bot.get_channel(channel.id)
+        try:
+            msg = await channelq.send("<@396178346054123523>")
+            message_list.append(msg)
+        except:
+            my_logger.warning(f"Error send text to channel: {channelq}")
+    await asyncio.sleep(2)
+    for msg in message_list:
+        try:
+            await msg.delete()
+            my_logger.debug("Delete msg")
+        except:
+            my_logger.error(f"Failed delete msg: {msg}")
+
+
 @bot.event
-async def send_sticker_wave(message):
-    try:
-        await message.delete()
-    except:
-        pass
-    if message.stickers:
-        for sticker in message.stickers:
-            if sticker.name == 'Wave':
+async def on_message(message):
+    if message.reference and isinstance(message.reference.resolved, discord.Message):
+        replied_to = message.reference.resolved
+        if replied_to.type == discord.MessageType.new_member:
+            if message.stickers:
+                try:
+                    await message.delete()
+                except:
+                    pass
                 message_list = []
                 for channel in message.guild.voice_channels:
-                    # channel_list.append(channel.id)
                     channelq = bot.get_channel(channel.id)
                     try:
                         msg = await channelq.send(f"<@{message.author.id}>")
@@ -235,6 +258,7 @@ async def send_sticker_wave(message):
                         my_logger.debug("Delete msg")
                     except:
                         my_logger.error(f"Failed delete msg: {msg}")
+    await bot.process_commands(message)
 
 
 @bot.hybrid_group(description="Stop play audio")
