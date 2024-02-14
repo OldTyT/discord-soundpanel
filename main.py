@@ -210,30 +210,31 @@ async def p(ctx, sound, stop="n", bye="n"):
         await asyncio.sleep(1)
 
 
-@bot.hybrid_command(description="Tag user kaqfan.")
-async def kaqfan(ctx,):
-    """
-    Tag user kaqfan
-    """
-    await ctx.message.delete()
-    # channel_list = []
-    message_list = []
-    for channel in ctx.guild.channels:
-        # channel_list.append(channel.id)
-        channelq = bot.get_channel(channel.id)
-        print(channelq)
-        try:
-            msg = await channelq.send("<@396178346054123523>")
-            message_list.append(msg)
-        except:
-            print(f"Error send text to channel: {channelq}")
-    await asyncio.sleep(2)
-    for msg in message_list:
-        try:
-            await msg.delete()
-            print("Delete msg")
-        except:
-            print(f"Failed delete msg: {msg}")
+@bot.event
+async def send_sticker_wave(message):
+    try:
+        await message.delete()
+    except:
+        pass
+    if message.stickers:
+        for sticker in message.stickers:
+            if sticker.name == 'Wave':
+                message_list = []
+                for channel in message.guild.voice_channels:
+                    # channel_list.append(channel.id)
+                    channelq = bot.get_channel(channel.id)
+                    try:
+                        msg = await channelq.send(f"<@{message.author.id}>")
+                        message_list.append(msg)
+                    except:
+                        my_logger.warning(f"Error send text to channel: {channelq}")
+                await asyncio.sleep(2)
+                for msg in message_list:
+                    try:
+                        await msg.delete()
+                        my_logger.debug("Delete msg")
+                    except:
+                        my_logger.error(f"Failed delete msg: {msg}")
 
 
 @bot.hybrid_group(description="Stop play audio")
