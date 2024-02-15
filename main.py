@@ -224,7 +224,7 @@ async def kaqfan(ctx,):
             message_list.append(msg)
         except:
             my_logger.warning(f"Error send text to channel: {channelq}")
-    await asyncio.sleep(2)
+    await asyncio.sleep(20)
     for msg in message_list:
         try:
             await msg.delete()
@@ -251,7 +251,7 @@ async def on_message(message):
                         message_list.append(msg)
                     except:
                         my_logger.warning(f"Error send text to channel: {channelq}")
-                await asyncio.sleep(2)
+                await asyncio.sleep(20)
                 for msg in message_list:
                     try:
                         await msg.delete()
